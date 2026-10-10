@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnicherProblem — Portal Pengaduan Warga</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🏛️</span>
+        <div>
+          <span class="logo-title">SnicherProblem</span>
+          <span class="logo-sub">Sistem Pengaduan Infrastruktur Daerah</span>
+        </div>
+      </div>
+      <div class="header-badge">Powered by Google Gemini + IBM Langflow</div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- FORM PANEL -->
+    <section class="card form-card">
+      <h2 class="card-title">📋 Laporkan Masalah</h2>
+      <p class="card-desc">Isi formulir di bawah ini. Laporan akan diproses secara otomatis oleh sistem AI kami.</p>
+
+      <form id="reportForm" novalidate>
+
+        <div class="form-group">
+          <label for="category">Kategori Masalah <span class="required">*</span></label>
+          <select id="category" name="category" required>
+            <option value="">-- Pilih Kategori --</option>
+            <optgroup label="DINAS PUPR">
+              <option value="Jalan Berlubang">Jalan Berlubang</option>
+              <option value="Jembatan Rusak">Jembatan Rusak</option>
+              <option value="Trotoar Rusak">Trotoar Rusak</option>
+              <option value="Tanggul Jebol">Tanggul Jebol</option>
+              <option value="Drainase Tersumbat">Drainase Tersumbat</option>
+            </optgroup>
+            <optgroup label="DINAS PERHUBUNGAN">
+              <option value="Lampu Lalu Lintas Padam">Lampu Lalu Lintas Padam</option>
+              <option value="PJU Mati">PJU (Penerangan Jalan) Mati</option>
+              <option value="Marka Jalan Rusak">Marka Jalan Rusak</option>
+              <option value="Rambu Lalu Lintas Hilang">Rambu Lalu Lintas Hilang</option>
+            </optgroup>
+            <optgroup label="DINAS LINGKUNGAN HIDUP">
+              <option value="Penumpukan Sampah Liar">Penumpukan Sampah Liar</option>
+              <option value="Polusi Limbah">Polusi / Limbah</option>
+              <option value="Pohon Tumbang">Pohon Tumbang di Fasilitas Umum</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="urgency">Tingkat Urgensi <span class="required">*</span></label>
+          <div class="urgency-group">
+            <label class="urgency-opt critical">
+              <input type="radio" name="urgency" value="HIGH" required />
+              <span>🔴 HIGH</span>
+            </label>
+            <label class="urgency-opt medium">
+              <input type="radio" name="urgency" value="MEDIUM" />
+              <span>🟡 MEDIUM</span>
+            </label>
+            <label class="urgency-opt low">
+              <input type="radio" name="urgency" value="LOW" />
+              <span>🟢 LOW</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Lokasi Kejadian <span class="required">*</span></label>
+          <input type="text" id="location" name="location" placeholder="Contoh: Jl. Sudirman No. 45, Kec. Bogor Tengah" required />
+        </div>
+
+        <div class="form-group">
+          <label for="summary">Deskripsi Masalah <span class="required">*</span></label>
+          <textarea id="summary" name="summary" rows="4" placeholder="Jelaskan masalah secara detail: ukuran, kondisi, potensi bahaya, dll." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="action_code">Jenis Aksi</label>
+          <select id="action_code" name="action_code">
+            <option value="DISPATCH_NEW_TICKET">Buat Tiket Baru</option>
+            <option value="MERGE_DUPLICATE_TICKET">Gabung dengan Laporan Serupa</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-icon">🚀</span>
+          <span class="btn-text">Kirim Laporan</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- RESULT PANEL -->
+    <section class="card result-card" id="resultPanel" style="display:none;">
+      <h2 class="card-title">✅ Laporan Diterima</h2>
+
+      <div class="ticket-header" id="ticketHeader">
+        <div class="ticket-id" id="ticketId">—</div>
+        <div class="ticket-status" id="ticketStatus">—</div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Dinas Tujuan</span>
+          <span class="info-value" id="assignedAgency">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Prioritas</span>
+          <span class="info-value" id="priorityLevel">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Lokasi</span>
+          <span class="info-value" id="locationTarget">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Estimasi Respon</span>
+          <span class="info-value" id="estimatedSla">—</span>
+        </div>
+      </div>
+
+      <div class="work-summary-box">
+        <span class="info-label">📝 Ringkasan Pekerjaan untuk Teknisi</span>
+        <p id="workSummary">—</p>
+      </div>
+
+      <div class="citizen-msg-box">
+        <span class="info-label">💬 Pesan untuk Warga</span>
+        <p id="citizenMsg">—</p>
+      </div>
+
+      <div class="audit-log">
+        <span id="auditLog">—</span>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-new" id="newReportBtn">📋 Buat Laporan Baru</button>
+        <button class="btn-copy" id="copyBtn">📋 Salin Tiket</button>
+      </div>
+    </section>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Memproses laporan...</p>
+        <small>AI sedang menganalisis dan membuat tiket</small>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-banner" id="errorBanner" style="display:none;">
+      <span>⚠️</span>
+      <span id="errorMsg">Terjadi kesalahan.</span>
+      <button id="closeError">✕</button>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>SnicherProblem &copy; 2026 — Sistem Pengaduan Warga Berbasis AI</p>
+    <p class="footer-powered">Powered by <strong>Google Gemini 2.5 Flash</strong> via <strong>IBM Langflow</strong></p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
