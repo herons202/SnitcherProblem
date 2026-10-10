@@ -1,13 +1,13 @@
 # SnicherProblem — Action & Execution Agent
 
-Sistem otomatis pembuatan tiket dinas untuk penanganan keluhan warga berbasis **IBM Langflow** + **IBM watsonx.ai**.
+Sistem otomatis pembuatan tiket dinas untuk penanganan keluhan warga berbasis **IBM Langflow** + **Google Gemini**.
 
 ## Arsitektur
 
 ```
 ChatInput (Payload JSON)
     ↓
-IBM watsonx.ai (ibm/granite-4-h-small)
+Google Generative AI (gemini-2.5-flash)
   [System Prompt: Action & Execution Logic]
     ↓
 ChatOutput (Tiket JSON Resmi)
@@ -40,16 +40,15 @@ Hackathon/
 
 ### Prasyarat
 - Langflow berjalan di `http://localhost:7860`
-- IBM watsonx.ai API Key + Project ID
+- Google API Key dari [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ### Cara Import Flow
 
 1. Buka `http://localhost:7860`
 2. Klik **New Flow** → **Import**
 3. Upload file `flows/snicherproblem_action_execution_agent.json`
-4. Klik komponen **IBM watsonx.ai**, isi:
-   - `Watsonx API Key` — API Key dari [IBM Cloud](https://cloud.ibm.com)
-   - `watsonx Project_ID` — Project ID dari watsonx.ai
+4. Klik komponen **Google Generative AI**, isi:
+   - `Google API Key` — API Key dari [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ## Skema Input (dari Brain Engine)
 
