@@ -76,18 +76,20 @@ function buildPayload(fd) {
 // ---- Call Langflow API ----
 async function callLangflow(payload) {
   const endpoint = `${CONFIG.LANGFLOW_URL}/api/v1/run/${CONFIG.FLOW_ID}?stream=false`;
-  const body = {
-    input_value: JSON.stringify(payload, null, 2),
+  // input_value harus plain string (JSON payload sebagai teks)
+  // Langflow akan meneruskan string ini ke Agent sebagai input chat
+  const body = JSON.stringify({
+    input_value: JSON.stringify(payload),
     input_type:  "chat",
     output_type: "chat",
-  };
+  });
   const resp = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-api-key":    CONFIG.API_KEY,
     },
-    body: JSON.stringify(body),
+    body,
   });
   if (!resp.ok) {
     const txt = await resp.text();

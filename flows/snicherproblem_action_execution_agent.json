@@ -317,7 +317,8 @@
                                                                                                        }
                                                                           },
                                                              "tool_mode":  false,
-                                                             "category":  "input_output"
+                                                             "category":  "input_output",
+                                                             "lf_version":  "1.12.2"
                                                          },
                                                 "showNode":  true
                                             },
@@ -1131,7 +1132,7 @@
                                                                                                     "trace_as_metadata":  true,
                                                                                                     "track_in_telemetry":  false,
                                                                                                     "type":  "str",
-                                                                                                    "value":  "Kamu adalah Action \u0026 Execution Agent untuk sistem SnicherProblem - platform pengaduan warga pemerintah daerah.\n\nTUGAS UTAMA: Proses payload JSON dari input dan hasilkan respons eksekusi resmi dalam format JSON.\n\nATURAN PEMBUATAN TIKET:\n1. Buat Nomor Tiket format: SNICH-[TAHUN][BULAN][HARI]-[RANDOM_4_DIGIT]\n   Gunakan tanggal hari ini dari tool current_date. Contoh: SNICH-20261010-8921\n2. Pemetaan dinas berdasarkan category/target_agency:\n   - DINAS_PUPR: jalan berlubang, jembatan, trotoar, tanggul, drainase utama\n   - DINAS_PERHUBUNGAN: lampu lalu lintas padam, PJU, marka jalan, rambu lalu lintas\n   - DINAS_LINGKUNGAN_HIDUP: sampah liar, polusi limbah, pohon tumbang di fasilitas umum\n3. Prioritas berdasarkan urgency:\n   - CRITICAL atau HIGH â priority_level: \"EMERGENCY_DISPATCH\", estimated_sla: \"\u003c 6 jam\"\n   - MEDIUM â priority_level: \"SCHEDULED_REPAIR\", estimated_sla: \"24-48 jam\"\n   - LOW â priority_level: \"ROUTINE_MAINTENANCE\", estimated_sla: \"Jadwal berkala 7-14 hari\"\n4. Jika action_code = MERGE_DUPLICATE_TICKET:\n   - JANGAN buat tiket baru\n   - Kembalikan status MERGED dengan tiket induk fiktif dan naikkan prioritas\n\nFORMAT OUTPUT (kembalikan HANYA JSON ini, tanpa teks lain di luar blok JSON):\n{\n  \"status\": \"SUCCESS\",\n  \"ticket_id\": \"[NOMOR_TIKET]\",\n  \"timestamp\": \"[WAKTU_EKSEKUSI_ISO8601]\",\n  \"dispatch_info\": {\n    \"assigned_agency\": \"[DINAS_TUJUAN]\",\n    \"priority_level\": \"[EMERGENCY_DISPATCH / SCHEDULED_REPAIR / ROUTINE_MAINTENANCE]\",\n    \"location_target\": \"[LOKASI_DARI_INPUT]\",\n    \"work_summary\": \"[RINGKASAN_KERJA_UNTUK_TEKNISI]\"\n  },\n  \"citizen_tracking\": {\n    \"tracking_code\": \"[NOMOR_TIKET]\",\n    \"status_message\": \"Laporan Anda telah berhasil diverifikasi dan diteruskan ke [NAMA_DINAS]. Tim teknis sedang dijadwalkan ke lokasi.\",\n    \"estimated_sla\": \"[ESTIMASI_WAKTU]\"\n  },\n  \"system_audit_log\": \"TICKET_CREATED_AND_DISPATCHED_TO_[KODE_DINAS]\"\n}"
+                                                                                                    "value":  "Kamu adalah Action \u0026 Execution Agent untuk sistem SnicherProblem - platform pengaduan warga pemerintah daerah.\n\nTUGAS UTAMA: Proses input dari pengguna dan hasilkan respons eksekusi resmi dalam format JSON.\n\nCARA MEMBACA INPUT:\n- Input bisa berupa JSON string, plain text, atau objek. Parse dengan fleksibel.\n- Ekstrak field: category, urgency, target_agency, location, summary, action_code\n- Jika field tidak lengkap, gunakan nilai default yang masuk akal berdasarkan konteks.\n\nATURAN PEMBUATAN TIKET:\n1. Buat Nomor Tiket format: SNICH-[TAHUN][BULAN][HARI]-[RANDOM_4_DIGIT]\n   Gunakan tool current_date untuk tanggal hari ini. Contoh: SNICH-20261010-8921\n2. Pemetaan dinas berdasarkan category/target_agency:\n   - DINAS_PUPR: jalan berlubang, jembatan, trotoar, tanggul, drainase utama\n   - DINAS_PERHUBUNGAN: lampu lalu lintas padam, PJU, marka jalan, rambu lalu lintas\n   - DINAS_LINGKUNGAN_HIDUP: sampah liar, polusi limbah, pohon tumbang di fasilitas umum\n3. Prioritas berdasarkan urgency:\n   - CRITICAL atau HIGH -\u003e priority_level: \"EMERGENCY_DISPATCH\", estimated_sla: \"\u003c 6 jam\"\n   - MEDIUM -\u003e priority_level: \"SCHEDULED_REPAIR\", estimated_sla: \"24-48 jam\"\n   - LOW -\u003e priority_level: \"ROUTINE_MAINTENANCE\", estimated_sla: \"Jadwal berkala 7-14 hari\"\n4. Jika action_code = MERGE_DUPLICATE_TICKET:\n   - JANGAN buat tiket baru\n   - Kembalikan status MERGED dengan tiket induk fiktif dan naikkan prioritas\n\nFORMAT OUTPUT (kembalikan HANYA JSON ini, tanpa teks lain, tanpa markdown, tanpa penjelasan):\n{\"status\":\"SUCCESS\",\"ticket_id\":\"[NOMOR_TIKET]\",\"timestamp\":\"[WAKTU_ISO8601]\",\"dispatch_info\":{\"assigned_agency\":\"[DINAS_TUJUAN]\",\"priority_level\":\"[LEVEL]\",\"location_target\":\"[LOKASI]\",\"work_summary\":\"[RINGKASAN]\"},\"citizen_tracking\":{\"tracking_code\":\"[NOMOR_TIKET]\",\"status_message\":\"Laporan Anda telah berhasil diverifikasi dan diteruskan ke [NAMA_DINAS]. Tim teknis sedang dijadwalkan ke lokasi.\",\"estimated_sla\":\"[ESTIMASI]\"},\"system_audit_log\":\"TICKET_CREATED_AND_DISPATCHED_TO_[KODE_DINAS]\"}"
                                                                                                 },
                                                                               "tools":  {
                                                                                             "_input_type":  "HandleInput",
@@ -1172,7 +1173,8 @@
                                                                           },
                                                              "tool_mode":  false,
                                                              "category":  "models_and_agents",
-                                                             "last_updated":  "2026-10-10T16:15:44.343Z"
+                                                             "last_updated":  "2026-10-10T16:15:44.343Z",
+                                                             "lf_version":  "1.12.2"
                                                          },
                                                 "showNode":  true,
                                                 "selected_output":  "response"
@@ -1498,7 +1500,8 @@
                                                                                                        }
                                                                           },
                                                              "tool_mode":  false,
-                                                             "category":  "input_output"
+                                                             "category":  "input_output",
+                                                             "lf_version":  "1.12.2"
                                                          },
                                                 "showNode":  true
                                             },
@@ -1571,13 +1574,13 @@
                                }
                            ],
                  "viewport":  {
-                                  "x":  160.6430212605901,
-                                  "y":  335.5593696695859,
+                                  "x":  107.64302126059033,
+                                  "y":  288.5593696695859,
                                   "zoom":  1.095709046459822
                               }
              },
     "is_component":  false,
-    "updated_at":  "2026-10-10T16:22:55+00:00",
+    "updated_at":  "2026-10-10T16:38:59+00:00",
     "webhook":  false,
     "endpoint_name":  null,
     "tags":  null,
