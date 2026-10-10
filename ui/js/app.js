@@ -7,7 +7,7 @@
 const CONFIG = {
   LANGFLOW_URL: "http://127.0.0.1:7860",
   FLOW_ID:      "c95bbd08-322b-4646-a54f-83191e2f55d8",
-  API_KEY:      "sk-dOuH2EJWqqovv4b-OzYgswbcxatMETPqJ94vNgW07Lw",
+  API_KEY:      "sk-dOuH2EJWqqovv4b-OzYgswbcxatMETPqJ94vNgW07Lw", // Langflow API Key
 };
 
 // Agency mapping berdasarkan category
