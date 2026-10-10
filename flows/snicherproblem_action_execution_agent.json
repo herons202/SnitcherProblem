@@ -1,0 +1,205 @@
+{
+  "id": "c95bbd08-322b-4646-a54f-83191e2f55d8",
+  "name": "SnicherProblem - Action & Execution Agent",
+  "description": "Sistem otomatis pembuatan tiket dinas untuk penanganan keluhan warga. Menerima payload JSON dari Brain Engine, membentuk nomor tiket resmi SNICH-[TAHUN][BULAN][HARI]-[XXXX], dan mendispatch ke dinas terkait (PUPR, Perhubungan, Lingkungan Hidup).",
+  "data": {
+    "nodes": [
+      {
+        "id": "ChatInput-jMZAy",
+        "type": "genericNode",
+        "position": { "x": 0, "y": 0 },
+        "selected": false,
+        "data": {
+          "id": "ChatInput-jMZAy",
+          "type": "ChatInput",
+          "node": {
+            "base_classes": ["Message"],
+            "description": "Get chat inputs from the Playground.",
+            "display_name": "Chat Input",
+            "minimized": true,
+            "outputs": [
+              {
+                "name": "message",
+                "display_name": "Chat Message",
+                "types": ["Message"],
+                "selected": "Message"
+              }
+            ],
+            "template": {
+              "_type": "Component",
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "name": "input_value",
+                "display_name": "Input Text",
+                "type": "str",
+                "value": "{\n  \"category\": \"Jalan Berlubang\",\n  \"urgency\": \"HIGH\",\n  \"target_agency\": \"DINAS_PUPR\",\n  \"location\": \"Jl. Sudirman No. 45, Kec. Bogor Tengah\",\n  \"summary\": \"Terdapat lubang besar di tengah jalan dengan diameter ±1 meter dan kedalaman 30cm, berbahaya bagi pengendara motor.\",\n  \"action_code\": \"DISPATCH_NEW_TICKET\"\n}",
+                "multiline": true,
+                "info": "Message to be passed as input.",
+                "required": false,
+                "show": true,
+                "advanced": false
+              }
+            }
+          },
+          "showNode": true
+        }
+      },
+      {
+        "id": "ext:ibm:WatsonxAIComponent@official-s518G",
+        "type": "genericNode",
+        "position": { "x": 480, "y": 0 },
+        "selected": false,
+        "data": {
+          "id": "ext:ibm:WatsonxAIComponent@official-s518G",
+          "type": "ext:ibm:WatsonxAIComponent@official",
+          "node": {
+            "display_name": "IBM watsonx.ai",
+            "description": "Generate text using IBM watsonx.ai foundation models.",
+            "base_classes": ["LanguageModel", "Message"],
+            "outputs": [
+              {
+                "name": "text_output",
+                "display_name": "Model Response",
+                "types": ["Message"],
+                "selected": "Message"
+              },
+              {
+                "name": "model_output",
+                "display_name": "Language Model",
+                "types": ["LanguageModel"],
+                "selected": "LanguageModel"
+              }
+            ],
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "_input_type": "SecretStrInput",
+                "name": "api_key",
+                "display_name": "Watsonx API Key",
+                "type": "str",
+                "value": "",
+                "password": true,
+                "required": true,
+                "info": "The API Key to use for the model."
+              },
+              "base_url": {
+                "_input_type": "DropdownInput",
+                "name": "base_url",
+                "display_name": "watsonx API Endpoint",
+                "type": "str",
+                "value": "https://us-south.ml.cloud.ibm.com",
+                "options": [
+                  "https://us-south.ml.cloud.ibm.com",
+                  "https://eu-de.ml.cloud.ibm.com",
+                  "https://eu-gb.ml.cloud.ibm.com",
+                  "https://au-syd.ml.cloud.ibm.com",
+                  "https://jp-tok.ml.cloud.ibm.com",
+                  "https://ca-tor.ml.cloud.ibm.com",
+                  "https://ap-south-1.aws.wxai.ibm.com"
+                ],
+                "required": true
+              },
+              "model_name": {
+                "_input_type": "DropdownInput",
+                "name": "model_name",
+                "display_name": "Model Name",
+                "type": "str",
+                "value": "ibm/granite-4-h-small",
+                "options": [
+                  "ibm/granite-4-h-small",
+                  "ibm/granite-3-8b-instruct",
+                  "ibm/granite-3-2b-instruct",
+                  "meta-llama/llama-3-3-70b-instruct",
+                  "mistral-large-2512"
+                ],
+                "required": true
+              },
+              "project_id": {
+                "_input_type": "StrInput",
+                "name": "project_id",
+                "display_name": "watsonx Project_ID",
+                "type": "str",
+                "value": "",
+                "info": "The project ID associated with the foundation model."
+              },
+              "space_id": {
+                "_input_type": "StrInput",
+                "name": "space_id",
+                "display_name": "watsonx Space_ID",
+                "type": "str",
+                "value": "",
+                "info": "The deployment space ID associated with the foundation model."
+              },
+              "system_message": {
+                "_input_type": "MultilineInput",
+                "name": "system_message",
+                "display_name": "System Message",
+                "type": "str",
+                "multiline": true,
+                "value": "Kamu adalah Action & Execution Agent untuk sistem SnicherProblem - platform pengaduan warga pemerintah daerah.\n\nTUGAS UTAMA: Proses payload JSON dari input dan hasilkan respons eksekusi resmi dalam format JSON.\n\nATURAN PEMBUATAN TIKET:\n1. Buat Nomor Tiket format: SNICH-[TAHUN][BULAN][HARI]-[RANDOM_4_DIGIT]\n   Gunakan tanggal hari ini. Contoh: SNICH-20261010-8921\n2. Pemetaan dinas berdasarkan category/target_agency:\n   - DINAS_PUPR: jalan berlubang, jembatan, trotoar, tanggul, drainase utama\n   - DINAS_PERHUBUNGAN: lampu lalu lintas padam, PJU, marka jalan, rambu lalu lintas\n   - DINAS_LINGKUNGAN_HIDUP: sampah liar, polusi limbah, pohon tumbang di fasilitas umum\n3. Prioritas berdasarkan urgency:\n   - CRITICAL atau HIGH → priority_level: \"EMERGENCY_DISPATCH\", estimated_sla: \"< 6 jam\"\n   - MEDIUM → priority_level: \"SCHEDULED_REPAIR\", estimated_sla: \"24-48 jam\"\n   - LOW → priority_level: \"ROUTINE_MAINTENANCE\", estimated_sla: \"Jadwal berkala 7-14 hari\"\n4. Jika action_code = MERGE_DUPLICATE_TICKET:\n   - JANGAN buat tiket baru\n   - Kembalikan status MERGED dengan tiket induk fiktif dan naikkan prioritas\n\nFORMAT OUTPUT (kembalikan HANYA JSON ini, tanpa teks lain di luar blok JSON):\n{\n  \"status\": \"SUCCESS\",\n  \"ticket_id\": \"[NOMOR_TIKET]\",\n  \"timestamp\": \"[WAKTU_EKSEKUSI_ISO8601]\",\n  \"dispatch_info\": {\n    \"assigned_agency\": \"[DINAS_TUJUAN]\",\n    \"priority_level\": \"[EMERGENCY_DISPATCH / SCHEDULED_REPAIR / ROUTINE_MAINTENANCE]\",\n    \"location_target\": \"[LOKASI_DARI_INPUT]\",\n    \"work_summary\": \"[RINGKASAN_KERJA_UNTUK_TEKNISI]\"\n  },\n  \"citizen_tracking\": {\n    \"tracking_code\": \"[NOMOR_TIKET]\",\n    \"status_message\": \"Laporan Anda telah berhasil diverifikasi dan diteruskan ke [NAMA_DINAS]. Tim teknis sedang dijadwalkan ke lokasi.\",\n    \"estimated_sla\": \"[ESTIMASI_WAKTU]\"\n  },\n  \"system_audit_log\": \"TICKET_CREATED_AND_DISPATCHED_TO_[KODE_DINAS]\"\n}",
+                "info": "System message to pass to the model."
+              },
+              "temperature": {
+                "_input_type": "SliderInput",
+                "name": "temperature",
+                "display_name": "Temperature",
+                "type": "slider",
+                "value": 0.1,
+                "advanced": true
+              },
+              "max_tokens": {
+                "_input_type": "IntInput",
+                "name": "max_tokens",
+                "display_name": "Max Tokens",
+                "type": "int",
+                "value": 1000,
+                "advanced": true
+              }
+            }
+          },
+          "showNode": true
+        }
+      },
+      {
+        "id": "ChatOutput-nNkrp",
+        "type": "genericNode",
+        "position": { "x": 960, "y": 0 },
+        "selected": false,
+        "data": {
+          "id": "ChatOutput-nNkrp",
+          "type": "ChatOutput",
+          "node": {
+            "base_classes": ["Message"],
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "minimized": true,
+            "outputs": [
+              {
+                "name": "message",
+                "display_name": "Output Message",
+                "types": ["Message"],
+                "selected": "Message"
+              }
+            ]
+          },
+          "showNode": true
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "ChatInput-jMZAy",
+        "target": "ext:ibm:WatsonxAIComponent@official-s518G",
+        "sourceHandle": "{\"dataType\":\"ChatInput\",\"id\":\"ChatInput-jMZAy\",\"name\":\"message\",\"output_types\":[\"Message\"]}",
+        "targetHandle": "{\"fieldName\":\"input_value\",\"id\":\"ext:ibm:WatsonxAIComponent@official-s518G\",\"inputTypes\":[\"Message\"],\"type\":\"str\"}"
+      },
+      {
+        "source": "ext:ibm:WatsonxAIComponent@official-s518G",
+        "target": "ChatOutput-nNkrp",
+        "sourceHandle": "{\"dataType\":\"ext:ibm:WatsonxAIComponent@official\",\"id\":\"ext:ibm:WatsonxAIComponent@official-s518G\",\"name\":\"text_output\",\"output_types\":[\"Message\"]}",
+        "targetHandle": "{\"fieldName\":\"input_value\",\"id\":\"ChatOutput-nNkrp\",\"inputTypes\":[\"Data\",\"JSON\",\"DataFrame\",\"Table\",\"Message\"],\"type\":\"other\"}"
+      }
+    ],
+    "viewport": { "x": 391, "y": 212, "zoom": 1.05 }
+  }
+}
